@@ -1,11 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
+
+
 set(project_name rendermath)
 project(${project_name} VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
 message(STATUS "Project source dir: ${PROJECT_SOURCE_DIR}")
-message(STATUS "Building project: ${PROJECT_NAME}")
+message(STATUS "Building project: ${PROJECT_NAME} ___ ${project_name}")
 
 if(MSVC)
     add_compile_options(/W4 /WX /Zi)
@@ -37,9 +40,12 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE HEADERS "include/*.hpp" "include/*.h")
+add_library(${project_name} STATIC ${SOURCES} ${HEADERS})
+target_include_directories(${project_name} PUBLIC include)
 
-add_executable(${project_name} main.cpp ${SOURCES} ${HEADERS})
+add_executable(run_tests test/main.cpp)
+target_link_libraries(run_tests PRIVATE ${project_name})
 
-target_include_directories(${PROJECT_NAME} PRIVATE include)
+enable_testing()
+add_test(TEST1 UnitTests COMMAND run_tests)
 
-#target_link_libraries(${project_name} ${SDL2_LIBRARIES} ${Vulkan_LIBRARIES} GPUOpen::VulkanMemoryAllocator glm::glm )
